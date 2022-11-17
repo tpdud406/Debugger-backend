@@ -9,8 +9,10 @@ app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
-
-app.use("/", express.static("./"));
+//위나 아래 둘 중 하나만 쓰는 걸로
+app.get("/", (req, res) => {
+  res.send("hi");
+});
 
 app.use(function (req, res, next) {
   next(createError(404));
