@@ -3,18 +3,22 @@ const { Server } = require("socket.io");
 module.exports = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: process.env.SOCKET_CLIENT_HOST,
+      // origin: process.env.CLIENT_HOST,
+      origin: "*",
       methods: ["GET", "POST", "PUT"],
     },
   });
 
   io.on("connection", (socket) => {
-    socket.on("Method", async (data) => {
-      console.log(data);
+    console.log(`socket ${socket.id} connected`);
+
+    socket.on("bb", (data) => {
+      console.log("받았다", data);
     });
 
-    socket.on("disconnect", () => {
-      console.log("Socket disconnected");
+    socket.emit("aa", "hi 아임 빼껜, 이 메세지를 받아라!");
+    socket.on("disconnect", (reason) => {
+      console.log(`socket ${socket.id} disconnected due to ${reason}`);
     });
 
     socket.on("error", (error) => {
