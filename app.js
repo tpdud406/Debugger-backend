@@ -1,6 +1,5 @@
 const createError = require("http-errors");
 const express = require("express");
-const path = require("path");
 const logger = require("morgan");
 
 const app = express();
@@ -8,10 +7,8 @@ const app = express();
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, "public")));
-//위나 아래 둘 중 하나만 쓰는 걸로
 app.get("/", (req, res) => {
-  res.send("hi");
+  res.send("서버 연결 성공");
 });
 
 app.use(function (req, res, next) {

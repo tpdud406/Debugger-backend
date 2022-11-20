@@ -1,9 +1,9 @@
 const { Server } = require("socket.io");
+const { connectChrome } = require("./chromeDevtools");
 
 module.exports = (server) => {
   const io = new Server(server, {
     cors: {
-      // origin: process.env.CLIENT_HOST,
       origin: "*",
       methods: ["GET", "POST", "PUT"],
     },
@@ -11,6 +11,7 @@ module.exports = (server) => {
 
   io.on("connection", (socket) => {
     console.log(`socket ${socket.id} connected`);
+    connectChrome(socket);
 
     socket.on("bb", (data) => {
       console.log("받았다", data);
