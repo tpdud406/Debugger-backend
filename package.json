@@ -7,13 +7,14 @@
     "dev": "NODE_ENV=development nodemon ./bin/www"
   },
   "dependencies": {
+    "chrome-launcher": "^0.15.1",
+    "chrome-remote-interface": "^0.28.2",
     "debug": "~2.6.9",
+    "dotenv": "^16.0.3",
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1",
-    "dotenv": "^16.0.3",
-    "socket.io": "^4.5.3",
-    "chrome-remote-interface": "^0.28.2"
+    "socket.io": "^4.5.3"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"
