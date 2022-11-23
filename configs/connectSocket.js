@@ -1,5 +1,19 @@
 const { Server } = require("socket.io");
 const { connectChrome } = require("./chromeDevtools");
+const path = require("path");
+const fs = require("fs");
+
+const writeCode = (src) => {
+  const session = path.join(__dirname, "/playground");
+
+  if (!fs.existsSync(session)) {
+    fs.mkdirSync(session);
+  }
+
+  fs.writeFileSync(path.join(session, "code.js"), src);
+
+  return session;
+};
 
 module.exports = (server) => {
   const io = new Server(server, {
@@ -11,13 +25,15 @@ module.exports = (server) => {
 
   io.on("connection", (socket) => {
     console.log(`socket ${socket.id} connected`);
-    connectChrome(socket);
 
-    socket.on("bb", (data) => {
-      console.log("받았다", data);
+    socket.on("beginDebug", (data) => {
+      console.log("재생버튼 클릭 beginDebug");
+      const code = JSON.parse(data);
+      const debugPath = writeCode(code);
+
+      connectChrome(socket, debugPath);
     });
 
-    socket.emit("aa", "hi 아임 빼껜, 이 메세지를 받아라!");
     socket.on("disconnect", (reason) => {
       console.log(`socket ${socket.id} disconnected due to ${reason}`);
     });
