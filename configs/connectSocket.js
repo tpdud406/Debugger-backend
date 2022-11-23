@@ -36,17 +36,17 @@ module.exports = (server) => {
       console.log("재생버튼 클릭 beginDebug");
       const code = JSON.parse(data);
       const debugPath = writeCode(code);
-      // const result = vm.run(code);
-      // console.log("code", code);
-      // console.log("result", result);
-
-      socket.on("disconnect", (reason) => {
-        console.log(`socket ${socket.id} disconnected due to ${reason}`);
-      });
-
-      socket.on("error", (error) => {
-        console.error(`Socket connect failed because ${error}`);
-      });
+      const result = vm.run(code);
+      //console.log("code", code);
+      //console.log("result", result);
     });
-  }
+
+    socket.on("disconnect", (reason) => {
+      console.log(`socket ${socket.id} disconnected due to ${reason}`);
+    });
+
+    socket.on("error", (error) => {
+      console.error(`Socket connect failed because ${error}`);
+    });
+  });
 };
