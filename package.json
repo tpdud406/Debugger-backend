@@ -7,6 +7,8 @@
     "dev": "NODE_ENV=development nodemon ./bin/www"
   },
   "dependencies": {
+    "axios": "^1.2.0",
+    "child_process": "^1.0.2",
     "chrome-launcher": "^0.15.1",
     "chrome-remote-interface": "^0.28.2",
     "cors": "^2.8.5",
