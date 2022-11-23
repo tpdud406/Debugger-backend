@@ -39,14 +39,14 @@ module.exports = (server) => {
       // const result = vm.run(code);
       // console.log("code", code);
       // console.log("result", result);
-    });
 
-    socket.on("disconnect", (reason) => {
-      console.log(`socket ${socket.id} disconnected due to ${reason}`);
-    });
+      socket.on("disconnect", (reason) => {
+        console.log(`socket ${socket.id} disconnected due to ${reason}`);
+      });
 
-    socket.on("error", (error) => {
-      console.error(`Socket connect failed because ${error}`);
+      socket.on("error", (error) => {
+        console.error(`Socket connect failed because ${error}`);
+      });
     });
-  });
+  }
 };

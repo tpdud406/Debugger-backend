@@ -24,13 +24,13 @@ exports.connectChrome = async (socket) => {
   const child = fork(__dirname + "/playground/code.js", {
     execArgv: [],
   });
-  console.log(child.connected && "fork child");
+  //console.log(child.connected && "fork child");
 
   try {
     protocol = await CDP({ port: chrome.port });
 
     const { Page, Runtime, Debugger, Network } = protocol;
-    console.log("디버거 연결 attach");
+    //console.log("디버거 연결 attach");
     Debugger.enable();
     await Runtime.runIfWaitingForDebugger();
     // Debugger.pause();
@@ -39,7 +39,7 @@ exports.connectChrome = async (socket) => {
     let parames = await Debugger.paused((params) => {
       old = frame_current;
       frame_current = JSON.stringify(params.callFrames);
-      console.log("내부 params", params);
+      //console.log("내부 params", params);
       Network.requestWillBeSentExtraInfo(({ headers, requestId }) => {
         isNeed = false;
         host = headers["Host"];
@@ -54,34 +54,34 @@ exports.connectChrome = async (socket) => {
 
       Network.requestWillBeSent(({ requestId, request }) => {
         if (req_ids.has(requestId) && flag_req == 1) {
-          console.log(frame_current);
+          //console.log(frame_current);
           flag_req += 1;
-          console.log("!#!"); //separator
-          console.log(JSON.stringify(request));
-          console.log("!#!");
+          //console.log("!#!"); //separator
+          //console.log(JSON.stringify(request));
+          //console.log("!#!");
         }
       });
 
       Network.responseReceived(({ requestId, response }) => {
         if (req_ids.has(requestId) && flag_req == 2) {
           flag_req += 1;
-          console.log("response", JSON.stringify(response));
+          //console.log("response", JSON.stringify(response));
         }
       });
 
       Debugger.resume();
     });
-    console.log("외부 parames", parames);
+    //console.log("외부 parames", parames);
     //여기까지 씨알아이
 
     // //여기부터 깃헙
     // let { scriptId } = Network.requestWillBeSent(async (params) => {
     //   //없어도 되나? 후이꺼엔 없었음
-    //   console.log("params.request.url", params.request.url);
-    //   console.log("params", params);
+    //   //console.log("params.request.url", params.request.url);
+    //   //console.log("params", params);
 
     //   const { requestId } = params;
-    //   console.log("requestId", requestId);
+    //   //console.log("requestId", requestId);
 
     //   const { breakpointId } = await Debugger.setBreakpoint({
     //     location: {
@@ -91,16 +91,16 @@ exports.connectChrome = async (socket) => {
     //   });
     // });
 
-    // console.log("scriptId", scriptId);
+    // //console.log("scriptId", scriptId);
     // pending at here
     Debugger.enable();
-    // console.log("enabled");
+    // //console.log("enabled");
     Debugger.pause();
-    console.log("pause");
+    // //console.log("pause");
 
-    Debugger.scriptParsed(async (params) => {
-      // const { scriptId } = params;
-      console.log("params", params);
+    let scriptId = Debugger.scriptParsed(async (params) => {
+      const { scriptId } = params;
+      //console.log("params", params);
       const { breakpointId } = await Debugger.setBreakpoint({
         location: {
           scriptId: 443,
@@ -109,41 +109,47 @@ exports.connectChrome = async (socket) => {
       });
     });
 
+    console.log("scriptId", scriptId());
+
     Debugger.paused((p) => {
       let { callFrames } = p;
       if (callFrames[0].url.endsWith("code.js")) {
-        console.log(
-          `PAUSED at line ${
-            callFrames[0].location.lineNumber + 1
-          } : filename -> ${callFrames[0].url}`,
-        ); // (zero-based)
+        // //console.log(
+        //   `PAUSED at line ${
+        //     callFrames[0].location.lineNumber + 1
+        //   } : filename -> ${callFrames[0].url}`,
+        // ); // (zero-based)
       }
       setTimeout(Debugger.resume, 1000);
     });
 
+    // await Debugger.resume();
+    // //console.log('resume'); 여까지 깃헙
+    //console.log("enabled??");
+
     socket.on("stepInto", () => {
       Debugger.stepInto();
-      console.log("stepInto");
+      //console.log("stepInto");
     });
 
     socket.on("stepOut", async () => {
       Debugger.stepOut();
 
-      console.log("stepOut");
+      //console.log("stepOut");
     });
 
     socket.on("stepOver", () => {
       Debugger.stepOver();
 
-      console.log("stepOver");
+      //console.log("stepOver");
     });
 
     socket.on("eval", async (data) => {
       const { callFrameId, expressions } = JSON.parse(data);
-      console.log("eval callFrameId", callFrameId);
+      //console.log("eval callFrameId", callFrameId);
 
       // if (callFrames[0].url.endsWith("code.js")) {
-      //   console.log(
+      //   //console.log(
       //     `PAUSED at line ${
       //       callFrames[0].location.lineNumber + 1
       //     } : filename -> ${callFrames[0].url}`,
@@ -168,22 +174,22 @@ exports.connectChrome = async (socket) => {
     });
 
     Debugger.paused(async ({ callFrames }) => {
-      console.log("ㅇ여기 들ㅓㅗ나?");
+      //console.log("ㅇ여기 들ㅓㅗ나?");
       if (callFrames.length <= 1) {
         stop();
       } else {
         const frame = callFrames[0];
         const { callFrameId, url } = frame;
 
-        console.log("frame", frame);
-        console.log("url", url);
-        console.log("callFrameId", callFrameId);
+        //console.log("frame", frame);
+        //console.log("url", url);
+        //console.log("callFrameId", callFrameId);
         if (url) {
           const { location } = frame;
           const scope = frame.scopeChain.find(
             (scope) => scope.type === "local",
           );
-          console.log("scope", scope);
+          //console.log("scope", scope);
           const variables = await Runtime.getProperties({
             objectId: scope.object.objectId,
           });
@@ -203,7 +209,7 @@ exports.connectChrome = async (socket) => {
     const stop = async () => {
       if (socket) {
         socket.emit("Debugger.stop");
-        console.log("여기도 들어오나?");
+        //console.log("여기도 들어오나?");
         const events = socket.eventNames();
 
         events.forEach((event) => {
@@ -231,10 +237,10 @@ exports.connectChrome = async (socket) => {
 
     // await Runtime.consoleAPICalled(({ type, args }) => {
     //   //프론트랑 안맞춰서 일단 지워놓음&프론트에서 콘솔용으로 사용한 것 같음
-    //   console.log("type", type);
-    //   console.log("args", args);
+    //   //console.log("type", type);
+    //   //console.log("args", args);
     //   const message = args.map((arg) => arg.value || arg.description).join(" ");
-    //   console.log("message", message);
+    //   //console.log("message", message);
     //   // socket.emit("Debugger.console", JSON.stringify({ type, message }));
     // });
 
@@ -242,7 +248,7 @@ exports.connectChrome = async (socket) => {
 
     // Debugger.scriptParsed(async (params) => {//구문 분석된 스크립트
     //   const { scriptId } = params;
-    //   console.log("scriptId", scriptId);
+    //   //console.log("scriptId", scriptId);
 
     //   const { breakpointId } = await Debugger.setBreakpoint({
     //     location: {
